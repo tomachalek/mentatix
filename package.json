@@ -1,0 +1,37 @@
+{
+  "name": "mentatix",
+  "version": "0.0.1",
+  "description": "A webapp to train your memory",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tomas Machalek <tomas.machalek@gmail.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.2.3",
+    "copy-webpack-plugin": "^4.5.1",
+    "css-loader": "^0.28.10",
+    "file-loader": "^1.1.11",
+    "mini-css-extract-plugin": "^0.4.0",
+    "source-map-loader": "^0.2.2",
+    "style-loader": "^0.19.0",
+    "ts-loader": "^4.1.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.4.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1",
+    "webpack-merge": "^4.1.0"
+  },
+  "dependencies": {
+    "@types/react": "^16.1.0",
+    "@types/react-dom": "^16.0.4",
+    "@types/rx": "^4.1.1",
+    "immutable": "^3.8.2",
+    "kombo": "^0.0.7",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "rxjs": "^5.5.6",
+    "semantic-ui-css": "^2.3.1"
+  }
+}
