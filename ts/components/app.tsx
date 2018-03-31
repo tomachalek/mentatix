@@ -1,7 +1,10 @@
 import * as React from 'react';
 import * as Immutable from 'immutable';
 import { ActionDispatcher, ViewUtils, Bound } from 'kombo';
-import {ApplicationModel, PanelNames, Actions, AppModelState} from '../models/app';
+import {ApplicationModel, PanelNames, AppModelState} from '../models/app';
+import {Actions} from '../models/common';
+import {CommonViews} from '../components/common';
+import {init as resultsViewsInit} from './results/main';
 
 export interface Views {
     Application:React.ComponentClass<{}>;
@@ -9,14 +12,18 @@ export interface Views {
 
 export interface ViewsArgs {
     dispatcher:ActionDispatcher;
-    he:ViewUtils;
+    he:ViewUtils<CommonViews>;
     appModel:ApplicationModel;
     panels:{
-        remNumberPanel:React.ComponentClass<{}>
+        remNumberPanel:React.ComponentClass<{}>,
+        sumNumberModel:React.ComponentClass<{}>
     }
 }
 
 export function init({dispatcher, he, appModel, panels}:ViewsArgs):Views {
+
+    const resultsViews = resultsViewsInit({dispatcher, he, appModel});
+    const commonViews = he.getComponents();
 
     /**
      *
@@ -29,21 +36,29 @@ export function init({dispatcher, he, appModel, panels}:ViewsArgs):Views {
         return <div className="Timer">{props.value}</div>;
     };
 
+    const TimerBar:React.SFC<{
+        value:number;
+
+    }> = (props) => {
+        const values = [];
+        for (let i = 0; i < props.value; i += 1) {
+            values.push(<span key={`t${i}`}>{'\u00a0'}</span>);
+        }
+        return <div className="TimerBar">{values}</div>;
+    }
+
     /**
      *
      * @param props
      */
-    const AnswerStatus:React.SFC<{
+    const LastAnswerStatus:React.SFC<{
         values:Immutable.List<boolean>;
 
     }> = (props) => {
         return (
-            <table className="AnswerStatus">
-                <tbody>
-                    {props.values.map((v, i) =>
-                        <tr key={`${i}:${v}`}><th>{`${i + 1}`}</th><td>{v.toString()}</td></tr>)}
-                </tbody>
-            </table>
+            <div className="LastAnswerStatus">
+                Last answer: <commonViews.CheckMark status={props.values.last()} />
+            </div>
         );
     };
 
@@ -61,12 +76,19 @@ export function init({dispatcher, he, appModel, panels}:ViewsArgs):Views {
             })
         };
 
+        const getClass = (ident:PanelNames) => {
+            return props.activePanel === ident ? 'pure-button button-active' : 'pure-button';
+        }
+
         return <ul className="MainMenu">
             <li>
-                <a className="pure-button" onClick={handleClick(PanelNames.REMEMBER_NUMBERS)}>Remember numbers</a>
+                <a className={getClass(PanelNames.REMEMBER_NUMBERS)} onClick={handleClick(PanelNames.REMEMBER_NUMBERS)}>Remember numbers</a>
             </li>
             <li>
-                <a className="pure-button" onClick={handleClick(PanelNames.SUM_NUMBERS)}>Sum numbers</a>
+                <a className={getClass(PanelNames.SUM_NUMBERS)} onClick={handleClick(PanelNames.SUM_NUMBERS)}>Sum numbers</a>
+            </li>
+            <li>
+                <a className={getClass(PanelNames.RESULTS)} onClick={handleClick(PanelNames.RESULTS)}>Results</a>
             </li>
         </ul>;
     }
@@ -77,10 +99,25 @@ export function init({dispatcher, he, appModel, panels}:ViewsArgs):Views {
     }> = (props) => {
         switch (props.activePanel) {
             case PanelNames.REMEMBER_NUMBERS:
-                return <panels.remNumberPanel />
+                return <panels.remNumberPanel />;
+            case PanelNames.SUM_NUMBERS:
+                return <panels.sumNumberModel />;
+            case PanelNames.RESULTS:
+                return <resultsViews.Results />;
             default:
                 return <div>Not implemented yet :-(</div>
         }
+    };
+
+    const OptionsButton:React.SFC<{}> = (props) => {
+
+        const handleClick = (props) => {
+            dispatcher.dispatch({
+                type: Actions.SHOW_TASK_OPTIONS
+            });
+        }
+
+        return <a className="pure-button button-options" onClick={handleClick}>Options</a>;
     };
 
     class Application extends React.PureComponent<AppModelState> {
@@ -98,14 +135,19 @@ export function init({dispatcher, he, appModel, panels}:ViewsArgs):Views {
             return (
                 <div>
                     <header>
-                        <h1>Membrain :-)</h1>
+                        <h1>Mentatix</h1>
                         <MainMenu activePanel={this.props.activePanel}  />
                     </header>
+                    <section className="context-conf">
+                        <OptionsButton />
+                    </section>
                     <section>
-                        <Timer value={this.props.timeRemaining} />
+                        <TimerBar value={this.props.timeRemaining} />
                         <Contents activePanel={this.props.activePanel} />
                     </section>
-                    <AnswerStatus values={this.props.answers} />
+                    {this.props.showLastAnswer ?
+                        <LastAnswerStatus values={this.props.answers} /> :
+                        null}
                 </div>
             );
         }

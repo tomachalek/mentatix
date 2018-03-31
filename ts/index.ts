@@ -3,10 +3,14 @@ import * as React from 'react';
 import * as Rx from 'rxjs/Rx';
 
 import {init as viewsInit} from './components/app';
-import {init as remNumberViewsInit} from './components/remNumbers';
-import {RememberNumbers} from './models/remNumbers';
+import {init as remNumberViewsInit} from './components/remNumbers/main';
+import {init as sumNumbersViewInit} from './components/sumNumbers/main';
+import {init as commonViewsInit} from './components/common';
+import {RememberNumbers} from './models/remNumbers/main';
+import {SumNumbers} from './models/sumNumbers/main';
 import { ActionDispatcher, ViewUtils } from 'kombo';
 import { ApplicationModel } from './models/app';
+import {CommonViews} from './components/common';
 
 declare var require:any;
 require('../css/pure-min.css');
@@ -18,13 +22,26 @@ export class AppPage {
 
     }
 
+    private translations = {
+        'en-US': {
+
+        }
+    }
+
 
     init():void {
-        console.log('page initialized');
         const dispatcher = new ActionDispatcher();
         const appModel = new ApplicationModel(dispatcher);
         const remNumberModel = new RememberNumbers(dispatcher);
-        const viewUtils = new ViewUtils('en_US');
+        const sumNumbersModel = new SumNumbers(dispatcher);
+
+        const viewUtils = new ViewUtils<CommonViews>(
+            'en_US',
+            this.translations
+        );
+
+        const commonViews = commonViewsInit(dispatcher, viewUtils);
+        viewUtils.attachComponents(commonViews);
 
         const remNumberViews = remNumberViewsInit({
             dispatcher: dispatcher,
@@ -32,27 +49,23 @@ export class AppPage {
             remNumberModel: remNumberModel
         });
 
+        const sumNumbersViews = sumNumbersViewInit({
+            dispatcher: dispatcher,
+            he: viewUtils,
+            sumNumberModel: sumNumbersModel
+        });
+
         const component = viewsInit({
             dispatcher: dispatcher,
             he: viewUtils,
             appModel: appModel,
             panels: {
-                remNumberPanel: remNumberViews.Panel
+                remNumberPanel: remNumberViews.Panel,
+                sumNumberModel: sumNumbersViews.Panel
             }
         });
 
-        const myObservable = Rx.Observable.create(observer => {
-            observer.next({value: 'foo'});
-            let i = 0;
-            setInterval(() => {
-                observer.next({value: `bar: ${i}`});
-                i += 1;
-            },
-                1000
-            );
-          });
-
-          ReactDOM.render(
+        ReactDOM.render(
             React.createElement(component.Application),
             window.document.getElementById('app-mount')
         );

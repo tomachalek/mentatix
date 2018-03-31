@@ -5,20 +5,35 @@ a {
 body {
     margin: 0;
     padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 header h1 {
-    padding: 0.6em 0;
+    padding: 0.3em 0;
     margin: 0;
     text-align: center;
-    background-color: #abcdef;
-    font-size: 1.8em;
+    color: #f1eec5;
+    font-size: 1.7em;
+}
+
+header {
+    border-style: solid;
+    border-width: 0 0 2px 0;
+    background-color: #3b4249;
+}
+
+section {
+    padding: 1em;
+}
+
+section.context-conf {
+    text-align: right;
 }
 
 ul.MainMenu {
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 0.3em;
 }
 
 ul.MainMenu li {
@@ -32,23 +47,34 @@ ul.MainMenu li:not(:first-child) {
 }
 
 
-.RemNumbersPanel span.pattern {
-    border: 1px solid red;
+.RemNumbersPanel span.pattern,
+.UserAnswerInput {
+    width: 10em;
+    border: 1px solid #3b4249;
+    border-radius: 5px;
     font-size: 4em;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .RemNumbersPanel .UserAnswerInput {
     font-size: 3em;
 }
 
-.RemNumbersPanel {
+.task-wrapper {
     text-align: center;
 }
 
-.AnswerStatus td,
-.AnswerStatus th {
+.AnswerList td,
+.AnswerList th {
     border: 1px solid #bbbbbb;
     padding: 0.3em 0.6em;
+}
+
+.AnswerButton {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.6em;
 }
 
 .Timer {
@@ -57,4 +83,80 @@ ul.MainMenu li:not(:first-child) {
     font-size: 3em;
     text-align: center;
     padding: 0.3em;
+}
+
+.TimerBar {
+    position: absolute;
+}
+
+.TimerBar span {
+    display: inline-block;
+    background-color: rgb(28, 184, 65);;
+    margin: 0.1em;
+    width: 1em;
+}
+
+section.modal-overlay {
+    position: fixed;
+    z-index: 5000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: RGBA(20, 20, 20, 0.70);
+}
+
+section.modal-overlay .closeable-frame {
+    background-color: #ffffff;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%,-30%);
+    width: 80%;
+    min-height: 30%;
+}
+
+.button-options {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: rgb(66, 184, 221);
+}
+
+.button-active {
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    background: rgb(28, 184, 65);
+}
+
+.Options .heading {
+    text-align: right;
+}
+
+.Options .heading a {
+    display: inline-block;
+    background-color: #777777;
+    color: #ffffff;
+    padding: 0.2em;
+    margin: 0.2em;
+}
+
+.SumNumbersDisplay {
+    display: inline-block;
+}
+
+.SumNumbersDisplay td {
+    font-size: 5em;
+    padding: 0.1em 0.3em;
+    border: 1px solid #eeeeee;
+}
+
+.LastAnswerStatus {
+    font-size: 2em;
+}
+
+.CheckMark.correct {
+    color: green;
+}
+
+.CheckMark.incorrect {
+    color: red;
 }

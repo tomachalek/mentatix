@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { ActionDispatcher, ViewUtils, Bound } from 'kombo';
-import {RememberNumbers, RememberNumbersState, Actions} from '../models/remNumbers';
-import {Actions as AppActions} from '../models/app';
-import {PaneStatus} from '../models/common';
+import {RememberNumbers, RememberNumbersState, Actions} from '../../models/remNumbers/main';
+import {PaneStatus, Actions as AppActions} from '../../models/common';
+import {init as optsViewInit} from './options';
+import {CommonViews} from '../common';
 
 export interface Views {
     Panel:React.ComponentClass<{}>;
@@ -10,37 +11,25 @@ export interface Views {
 
 export interface ViewsArgs {
     dispatcher:ActionDispatcher;
-    he:ViewUtils;
+    he:ViewUtils<CommonViews>;
     remNumberModel:RememberNumbers;
 }
 
 export function init({dispatcher, he, remNumberModel}:ViewsArgs):Views {
 
-    /**
-     *
-     * @param props
-     */
-    const StartButton:React.SFC<{}> = (props) => {
+    const commonViews = he.getComponents();
+    const optionsViews = optsViewInit({dispatcher, he});
 
-        const handleClick = () => {
-            dispatcher.dispatch({
-                type: AppActions.START_TASK
-            });
-        };
-
-        return <button className="pure-button pure-button-primary"
-                    onClick={handleClick}>Run</button>;
-    }
 
     const AnswerButton:React.SFC<{}> = (props) => {
 
         const handleClick = () => {
             dispatcher.dispatch({
-                type: Actions.SUBMIT_USER_ANSWER
+                type: AppActions.SUBMIT_USER_ANSWER
             });
         };
 
-        return <button type="button" className="pure-button pure-button-primary"
+        return <button type="button" className="pure-button pure-button-primary AnswerButton"
                     onClick={handleClick}>Answer</button>;
     }
 
@@ -76,7 +65,7 @@ export function init({dispatcher, he, remNumberModel}:ViewsArgs):Views {
         const handleKey = (evt:React.KeyboardEvent<{}>) => {
             if (evt.keyCode === 13) {
                 dispatcher.dispatch({
-                    type: Actions.SUBMIT_USER_ANSWER
+                    type: AppActions.SUBMIT_USER_ANSWER
                 });
                 evt.preventDefault();
                 evt.stopPropagation();
@@ -97,7 +86,10 @@ export function init({dispatcher, he, remNumberModel}:ViewsArgs):Views {
         private renderContents() {
             switch (this.props.status) {
                 case PaneStatus.PENDING:
-                    return <StartButton />;
+                    return <>
+                        <p>Try to remember phone-like numbers</p>
+                        <commonViews.StartButton />
+                    </>;
                 case PaneStatus.PLAYING:
                     return <PatternDisplay pattern={this.props.pattern} />;
                 case PaneStatus.WAITING_ANSWER:
@@ -111,7 +103,15 @@ export function init({dispatcher, he, remNumberModel}:ViewsArgs):Views {
         render() {
             return (
                 <div className="RemNumbersPanel">
-                    {this.renderContents()}
+                    {this.props.optionsVisible ?
+                        <optionsViews.Options
+                                optionsTimeRemaining={this.props.optionsTimeRemaining}
+                                optionsPatternLength={this.props.optionsPatternLength} /> :
+                        null
+                    }
+                    <div className="task-wrapper">
+                        {this.renderContents()}
+                    </div>
                 </div>
             );
         }
